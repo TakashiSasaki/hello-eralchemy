@@ -1,0 +1,3 @@
+[submodule "eralchemy"]
+	path = eralchemy
+	url = https://github.com/eralchemy/eralchemy.git
