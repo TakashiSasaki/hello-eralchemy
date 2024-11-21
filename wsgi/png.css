@@ -1,3 +1,8 @@
+/* グローバル設定でbox-sizingをborder-boxに設定 */
+* {
+    box-sizing: border-box;
+}
+
 /* 全体のスタイルはそのまま */
 body {
     font-family: Arial, sans-serif;
@@ -24,8 +29,9 @@ h1 {
     margin-bottom: 20px;
 }
 
+/* テキストエリアの調整 */
 textarea {
-    width: 100%;
+    width: 100%; /* 親要素の幅に完全に収まる */
     height: 150px;
     padding: 10px;
     border: 1px solid #ccc;
@@ -34,6 +40,7 @@ textarea {
     resize: vertical;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
     margin-bottom: 20px;
+    overflow-x: hidden; /* 横スクロールバーを非表示 */
 }
 
 /* ボタンのスタイル */
