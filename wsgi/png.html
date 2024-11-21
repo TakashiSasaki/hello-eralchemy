@@ -10,12 +10,26 @@
     <div class="container">
         <h1>ER Diagram Generator</h1>
         <textarea id="sql-input" placeholder="Write your SQL schema here..."></textarea>
-        <button id="submit-btn">Generate ER Diagram</button>
+        <div class="button-container">
+            <button id="submit-btn">Generate ER Diagram</button>
+            <div id="loading-spinner" class="spinner" style="display: none;"></div>
+        </div>
         <img id="er-diagram" alt="ER Diagram will appear here" style="display: none;">
     </div>
     <script>
+        let isFetching = false; // リクエスト中の状態を追跡
+
         document.getElementById('submit-btn').addEventListener('click', async () => {
+            if (isFetching) {
+                return; // リクエスト中の場合は何もしない
+            }
+
             const sql = document.getElementById('sql-input').value;
+            const button = document.getElementById('submit-btn');
+            const spinner = document.getElementById('loading-spinner');
+            isFetching = true; // リクエスト中に設定
+            button.disabled = true; // ボタンを無効化
+            spinner.style.display = 'inline-block'; // スピナーを表示
 
             try {
                 const response = await fetch('http://localhost:18080', {
@@ -40,6 +54,10 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('An error occurred while generating the ER diagram.');
+            } finally {
+                isFetching = false; // リクエスト終了後に状態をリセット
+                button.disabled = false; // ボタンを再度有効化
+                spinner.style.display = 'none'; // スピナーを非表示
             }
         });
     </script>
