@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ER Diagram Generator</title>
+    <link rel="stylesheet" href="png.css">
 </head>
 <body>
-    <textarea id="sql-input" placeholder="Write your SQL here..." rows="10" cols="50"></textarea><br>
-    <button id="submit-btn">Generate ER Diagram</button>
-    <br>
-    <img id="er-diagram" alt="ER Diagram will appear here" style="display: none; margin-top: 20px;">
+    <div class="container">
+        <h1>ER Diagram Generator</h1>
+        <textarea id="sql-input" placeholder="Write your SQL schema here..."></textarea>
+        <button id="submit-btn">Generate ER Diagram</button>
+        <img id="er-diagram" alt="ER Diagram will appear here" style="display: none;">
+    </div>
     <script>
         document.getElementById('submit-btn').addEventListener('click', async () => {
             const sql = document.getElementById('sql-input').value;
@@ -20,7 +23,7 @@
                     headers: {
                         'Content-Type': 'text/plain',
                     },
-                    body: sql, // SQL文を直接送信
+                    body: sql,
                 });
 
                 if (response.ok) {
