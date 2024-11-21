@@ -15,6 +15,7 @@
             <div id="loading-spinner" class="spinner" style="display: none;"></div>
         </div>
         <img id="er-diagram" alt="ER Diagram will appear here" style="display: none;">
+        <p id="error-message" style="color: red; display: none;"></p>
     </div>
     <script>
         let isFetching = false; // リクエスト中の状態を追跡
@@ -27,9 +28,11 @@
             const sql = document.getElementById('sql-input').value;
             const button = document.getElementById('submit-btn');
             const spinner = document.getElementById('loading-spinner');
+            const errorMessage = document.getElementById('error-message');
             isFetching = true; // リクエスト中に設定
             button.disabled = true; // ボタンを無効化
             spinner.style.display = 'inline-block'; // スピナーを表示
+            errorMessage.style.display = 'none'; // エラーメッセージを非表示
 
             try {
                 const response = await fetch('http://localhost:18080', {
@@ -48,12 +51,15 @@
                     imgElement.src = imgURL;
                     imgElement.style.display = 'block';
                 } else {
+                    // サーバエラー（SQL文法エラーなど）の場合
                     const errorText = await response.text();
-                    alert(`Error: ${errorText}`);
+                    errorMessage.textContent = `Server Error: ${errorText}`;
+                    errorMessage.style.display = 'block';
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while generating the ER diagram.');
+                // ネットワークエラー（fetch自体が失敗）の場合
+                errorMessage.textContent = `Network Error: ${error.message}`;
+                errorMessage.style.display = 'block';
             } finally {
                 isFetching = false; // リクエスト終了後に状態をリセット
                 button.disabled = false; // ボタンを再度有効化
