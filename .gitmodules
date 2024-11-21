@@ -1,6 +1,6 @@
 [submodule "eralchemy"]
-	path = eralchemy
-	url = https://github.com/eralchemy/eralchemy.git
+    path = eralchemy
+    url = https://github.com/eralchemy/eralchemy.git
 [submodule "sqlalchemy"]
 	path = sqlalchemy
 	url = https://github.com/sqlalchemy/sqlalchemy.git
