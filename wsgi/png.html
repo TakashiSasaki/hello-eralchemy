@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ER Diagram Generator</title>
+</head>
+<body>
+    <textarea id="sql-input" placeholder="Write your SQL here..." rows="10" cols="50"></textarea><br>
+    <button id="submit-btn">Generate ER Diagram</button>
+    <br>
+    <img id="er-diagram" alt="ER Diagram will appear here" style="display: none; margin-top: 20px;">
+    <script>
+        document.getElementById('submit-btn').addEventListener('click', async () => {
+            const sql = document.getElementById('sql-input').value;
+
+            try {
+                const response = await fetch('http://localhost:18080', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    },
+                    body: sql, // SQL文を直接送信
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const imgURL = URL.createObjectURL(blob);
+
+                    const imgElement = document.getElementById('er-diagram');
+                    imgElement.src = imgURL;
+                    imgElement.style.display = 'block';
+                } else {
+                    const errorText = await response.text();
+                    alert(`Error: ${errorText}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while generating the ER diagram.');
+            }
+        });
+    </script>
+</body>
+</html>
