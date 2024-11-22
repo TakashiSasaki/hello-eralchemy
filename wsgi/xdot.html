@@ -1,0 +1,106 @@
+<!-- File name: xdot.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ER Diagram Generator (XDOT)</title>
+    <link rel="stylesheet" href="xdot.css">
+</head>
+<body>
+    <div class="container">
+        <h1>ER Diagram Generator (XDOT)</h1>
+        <textarea id="sql-input" placeholder="Write your SQL schema here..."></textarea>
+        <div class="button-container">
+            <button id="load-sql-btn">Load Example SQL</button>
+            <button id="submit-btn">Generate XDOT File</button>
+            <button id="download-btn" style="display: none;">Download XDOT File</button>
+            <div id="loading-spinner" class="spinner" style="display: none;"></div>
+        </div>
+        <pre id="xdot-content" style="display: none; border: 1px solid #ccc; padding: 10px; white-space: pre-wrap; overflow-x: auto;"></pre>
+        <pre id="error-message" style="color: red; display: none;"></pre>
+    </div>
+    <script>
+        let isFetching = false;
+
+        document.getElementById('load-sql-btn').addEventListener('click', async () => {
+            const sqlInput = document.getElementById('sql-input');
+            const errorMessage = document.getElementById('error-message');
+            const xdotContent = document.getElementById('xdot-content');
+
+            errorMessage.style.display = 'none';
+            xdotContent.style.display = 'none';
+
+            try {
+                const response = await fetch('/example.sql');
+                if (!response.ok) {
+                    throw new Error(`Failed to load example.sql: ${response.statusText}`);
+                }
+                const sql = await response.text();
+                sqlInput.value = sql;
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        document.getElementById('submit-btn').addEventListener('click', async () => {
+            if (isFetching) return;
+
+            const sql = document.getElementById('sql-input').value;
+            const button = document.getElementById('submit-btn');
+            const spinner = document.getElementById('loading-spinner');
+            const errorMessage = document.getElementById('error-message');
+            const xdotContent = document.getElementById('xdot-content');
+            const downloadButton = document.getElementById('download-btn');
+
+            isFetching = true;
+            button.disabled = true;
+            spinner.style.display = 'inline-block';
+            errorMessage.style.display = 'none';
+            xdotContent.style.display = 'none';
+            downloadButton.style.display = 'none';
+
+            try {
+                const response = await fetch('http://localhost:18080', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: sql,
+                });
+
+                if (response.ok) {
+                    const xdotText = await response.text();
+
+                    // Display the XDOT content in the pre element
+                    xdotContent.textContent = xdotText;
+                    xdotContent.style.display = 'block';
+
+                    // Create a Blob and attach it to the Download button
+                    const blob = new Blob([xdotText], { type: 'application/vnd.graphviz' });
+                    const url = window.URL.createObjectURL(blob);
+                    downloadButton.onclick = () => {
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'diagram.xdot';
+                        link.click();
+                        window.URL.revokeObjectURL(url);
+                    };
+                    downloadButton.style.display = 'inline-block';
+
+                } else {
+                    const errorText = await response.text();
+                    errorMessage.textContent = `Server Error: ${errorText}`;
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = `Network Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+            } finally {
+                isFetching = false;
+                button.disabled = false;
+                spinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -128,12 +128,13 @@ class Tag(Base):
 if __name__ == "__main__":
     from eralchemy import render_er
 
-    render_er(Base, "forum.svg")
-    render_er(Base, "forum.er")
-    render_er(Base, "forum.dot")
-    render_er(Base, "forum.png")
-    render_er(Base, "forum.plain")
-    render_er(Base, "forum.webp")
-    render_er(Base, "forum.eps")
-    render_er(Base, "forum.ps")
-    render_er(Base, "forum.ps2")
+    #render_er(Base, "forum.svg")
+    #render_er(Base, "forum.er")
+    #render_er(Base, "forum.dot")
+    #render_er(Base, "forum.png")
+    #render_er(Base, "forum.plain")
+    #render_er(Base, "forum.webp")
+    #render_er(Base, "forum.eps")
+    #render_er(Base, "forum.ps")
+    #render_er(Base, "forum.ps2")
+    render_er(Base, "forum.xdot")

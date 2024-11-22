@@ -12,5 +12,6 @@ MIME_TYPES = {
     '.png': 'image/png',
     '.webp': 'image/webp',
     '.gv': 'text/vnd.graphviz',
-    '.dot': 'text/vnd.graphviz',  # Added MIME type for .dot files
+    '.dot': 'text/vnd.graphviz',
+    '.xdot': 'application/vnd.graphviz',  # Added MIME type for .xdot files
 }
