@@ -11,6 +11,7 @@
         <h1>ER Diagram Generator</h1>
         <textarea id="sql-input" placeholder="Write your SQL schema here..."></textarea>
         <div class="button-container">
+            <button id="load-sql-btn">Load Example SQL</button>
             <button id="submit-btn">Generate ER Diagram</button>
             <div id="loading-spinner" class="spinner" style="display: none;"></div>
         </div>
@@ -19,6 +20,26 @@
     </div>
     <script>
         let isFetching = false; // リクエスト中の状態を追跡
+
+        // Load example.sql into the textarea
+        document.getElementById('load-sql-btn').addEventListener('click', async () => {
+            const sqlInput = document.getElementById('sql-input');
+            const errorMessage = document.getElementById('error-message');
+
+            errorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('/example.sql');
+                if (!response.ok) {
+                    throw new Error(`Failed to load example.sql: ${response.statusText}`);
+                }
+                const sql = await response.text();
+                sqlInput.value = sql;
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+            }
+        });
 
         document.getElementById('submit-btn').addEventListener('click', async () => {
             if (isFetching) {
@@ -51,13 +72,11 @@
                     imgElement.src = imgURL;
                     imgElement.style.display = 'block';
                 } else {
-                    // サーバエラー（SQL文法エラーなど）の場合
                     const errorText = await response.text();
                     errorMessage.textContent = `Server Error: ${errorText}`;
                     errorMessage.style.display = 'block';
                 }
             } catch (error) {
-                // ネットワークエラー（fetch自体が失敗）の場合
                 errorMessage.textContent = `Network Error: ${error.message}`;
                 errorMessage.style.display = 'block';
             } finally {
