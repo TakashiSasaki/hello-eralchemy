@@ -3,6 +3,7 @@
 import sqlite3
 import tempfile
 import os
+import signal
 from wsgiref.simple_server import make_server, WSGIServer
 from eralchemy import render_er
 from mimetypes import MIME_TYPES  # Import shared MIME types
@@ -69,7 +70,7 @@ def application(environ, start_response):
             connection.commit()
             connection.close()
 
-            render_er(f"sqlite:///{temp_db_name}", temp_dot_json_name, 'dot_json')
+            render_er(f"sqlite:///{temp_db_name}", temp_dot_json_name)
 
             with open(temp_dot_json_name, "rb") as dot_json_file:
                 dot_json_data = dot_json_file.read()
