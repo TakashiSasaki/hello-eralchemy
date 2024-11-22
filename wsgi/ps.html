@@ -14,8 +14,10 @@
         <div class="button-container">
             <button id="load-sql-btn">Load Example SQL</button>
             <button id="submit-btn">Generate PS File</button>
+            <button id="download-btn" style="display: none;">Download PS File</button>
             <div id="loading-spinner" class="spinner" style="display: none;"></div>
         </div>
+        <pre id="ps-content" style="display: none; border: 1px solid #ccc; padding: 10px; white-space: pre-wrap; overflow-x: auto;"></pre>
         <pre id="error-message" style="color: red; display: none;"></pre>
     </div>
     <script>
@@ -24,8 +26,10 @@
         document.getElementById('load-sql-btn').addEventListener('click', async () => {
             const sqlInput = document.getElementById('sql-input');
             const errorMessage = document.getElementById('error-message');
+            const psContent = document.getElementById('ps-content');
 
             errorMessage.style.display = 'none';
+            psContent.style.display = 'none';
 
             try {
                 const response = await fetch('/example.sql');
@@ -47,11 +51,15 @@
             const button = document.getElementById('submit-btn');
             const spinner = document.getElementById('loading-spinner');
             const errorMessage = document.getElementById('error-message');
+            const psContent = document.getElementById('ps-content');
+            const downloadButton = document.getElementById('download-btn');
 
             isFetching = true;
             button.disabled = true;
             spinner.style.display = 'inline-block';
             errorMessage.style.display = 'none';
+            psContent.style.display = 'none';
+            downloadButton.style.display = 'none';
 
             try {
                 const response = await fetch('http://localhost:18080', {
@@ -61,13 +69,24 @@
                 });
 
                 if (response.ok) {
-                    const blob = await response.blob();
+                    const psText = await response.text();
+
+                    // Display the PS content in the pre element
+                    psContent.textContent = psText;
+                    psContent.style.display = 'block';
+
+                    // Create a Blob and attach it to the Download button
+                    const blob = new Blob([psText], { type: 'application/postscript' });
                     const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'diagram.ps';
-                    link.click();
-                    window.URL.revokeObjectURL(url);
+                    downloadButton.onclick = () => {
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'diagram.ps';
+                        link.click();
+                        window.URL.revokeObjectURL(url);
+                    };
+                    downloadButton.style.display = 'inline-block';
+
                 } else {
                     const errorText = await response.text();
                     errorMessage.textContent = `Server Error: ${errorText}`;
