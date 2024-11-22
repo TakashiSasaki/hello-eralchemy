@@ -13,5 +13,6 @@ MIME_TYPES = {
     '.webp': 'image/webp',
     '.gv': 'text/vnd.graphviz',
     '.dot': 'text/vnd.graphviz',
-    '.xdot': 'application/vnd.graphviz',  # Added MIME type for .xdot files
+    '.xdot': 'application/vnd.graphviz',
+    '.json': 'application/json',  # Added MIME type for JSON files
 }
