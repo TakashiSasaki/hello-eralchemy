@@ -2,8 +2,10 @@
 
 import sqlite3
 import tempfile
-import os, signal, sys
-from wsgiref.simple_server import make_server
+import os
+import signal
+import sys
+from wsgiref.simple_server import make_server, WSGIServer
 from eralchemy import render_er
 from threading import Thread
 from time import sleep
@@ -17,6 +19,12 @@ MIME_TYPES = {
     '.htm': 'text/html',
     '.css': 'text/css',
 }
+
+class TimeoutWSGIServer(WSGIServer):
+    """WSGIServer with timeout support."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.timeout = 1  # 1秒ごとにポーリング可能
 
 def application(environ, start_response):
     method = environ['REQUEST_METHOD']
@@ -124,30 +132,18 @@ def application(environ, start_response):
         ])
         return [b"Only POST and GET methods are supported."]
 
-# WSGIサーバを別スレッドで起動
+# サーバの起動と停止を管理
 def run_server():
     global server
     port = 18080
-    server = make_server('', port, application)
+    server = make_server('', port, application, server_class=TimeoutWSGIServer)
     print(f"Serving on port {port}... (Press Ctrl+C to stop)")
-    server.serve_forever()
 
-if __name__ == '__main__':
-    server_thread = Thread(target=run_server)
-    server_thread.start()
-
-    def signal_handler(sig, frame):
-        print("\nShutting down server gracefully...")
-        server.shutdown()
-        server_thread.join()  # スレッドの終了を待つ
-        print("Server stopped.")
-        sys.exit(0)
-
-    signal.signal(signal.SIGINT, signal_handler)
-
-    # 無限ループでシグナルを待機
     try:
         while True:
-            sleep(1)
+            server.handle_request()  # タイムアウト設定でポーリング
     except KeyboardInterrupt:
-        pass
+        print("\nShutting down server gracefully...")
+
+if __name__ == '__main__':
+    run_server()
