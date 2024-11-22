@@ -50,6 +50,8 @@
             const button = document.getElementById('submit-btn');
             const spinner = document.getElementById('loading-spinner');
             const errorMessage = document.getElementById('error-message');
+            const imgElement = document.getElementById('er-diagram');
+
             isFetching = true; // リクエスト中に設定
             button.disabled = true; // ボタンを無効化
             spinner.style.display = 'inline-block'; // スピナーを表示
@@ -68,15 +70,20 @@
                     const blob = await response.blob();
                     const imgURL = URL.createObjectURL(blob);
 
-                    const imgElement = document.getElementById('er-diagram');
                     imgElement.src = imgURL;
                     imgElement.style.display = 'block';
                 } else {
+                    // エラーの場合、既存の画像を消去
+                    imgElement.style.display = 'none';
+                    imgElement.src = '';
                     const errorText = await response.text();
                     errorMessage.textContent = `Server Error: ${errorText}`;
                     errorMessage.style.display = 'block';
                 }
             } catch (error) {
+                // エラーの場合、既存の画像を消去
+                imgElement.style.display = 'none';
+                imgElement.src = '';
                 errorMessage.textContent = `Network Error: ${error.message}`;
                 errorMessage.style.display = 'block';
             } finally {
