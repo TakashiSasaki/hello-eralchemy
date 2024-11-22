@@ -14,5 +14,6 @@ MIME_TYPES = {
     '.gv': 'text/vnd.graphviz',
     '.dot': 'text/vnd.graphviz',
     '.xdot': 'application/vnd.graphviz',
-    '.json': 'application/json',  # Added MIME type for JSON files
+    '.json': 'application/json',
+    '.json0': 'application/json',  # Added MIME type for JSON0 files
 }
