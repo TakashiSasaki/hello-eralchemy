@@ -9,16 +9,7 @@ from wsgiref.simple_server import make_server, WSGIServer
 from eralchemy import render_er
 from threading import Thread
 from time import sleep
-
-# MIMEタイプを拡張子に基づいて設定
-MIME_TYPES = {
-    '.sql': 'text/plain',
-    '.txt': 'text/plain',
-    '.plain': 'text/plain',
-    '.html': 'text/html',
-    '.htm': 'text/html',
-    '.css': 'text/css',
-}
+from mimetypes import MIME_TYPES
 
 class TimeoutWSGIServer(WSGIServer):
     """WSGIServer with timeout support."""

@@ -4,15 +4,7 @@ import os
 import signal
 from wsgiref.simple_server import make_server, WSGIServer
 from eralchemy import render_er
-
-MIME_TYPES = {
-    '.sql': 'text/plain',
-    '.txt': 'text/plain',
-    '.html': 'text/html',
-    '.htm': 'text/html',
-    '.css': 'text/css',
-    '.png': 'image/png',
-}
+from mimetypes import MIME_TYPES
 
 class TimeoutWSGIServer(WSGIServer):
     def __init__(self, *args, **kwargs):
