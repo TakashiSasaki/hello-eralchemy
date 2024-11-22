@@ -135,3 +135,5 @@ if __name__ == "__main__":
     render_er(Base, "forum.plain")
     render_er(Base, "forum.webp")
     render_er(Base, "forum.eps")
+    render_er(Base, "forum.ps")
+    render_er(Base, "forum.ps2")
