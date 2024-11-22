@@ -2,9 +2,11 @@
 
 import sqlite3
 import tempfile
-import os
+import os, signal, sys
 from wsgiref.simple_server import make_server
 from eralchemy import render_er
+from threading import Thread
+from time import sleep
 
 # MIMEタイプを拡張子に基づいて設定
 MIME_TYPES = {
@@ -122,9 +124,30 @@ def application(environ, start_response):
         ])
         return [b"Only POST and GET methods are supported."]
 
-# WSGIサーバを起動
-if __name__ == '__main__':
+# WSGIサーバを別スレッドで起動
+def run_server():
+    global server
     port = 18080
-    print(f"Serving on port {port}...")
-    with make_server('', port, application) as server:
-        server.serve_forever()
+    server = make_server('', port, application)
+    print(f"Serving on port {port}... (Press Ctrl+C to stop)")
+    server.serve_forever()
+
+if __name__ == '__main__':
+    server_thread = Thread(target=run_server)
+    server_thread.start()
+
+    def signal_handler(sig, frame):
+        print("\nShutting down server gracefully...")
+        server.shutdown()
+        server_thread.join()  # スレッドの終了を待つ
+        print("Server stopped.")
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
+    # 無限ループでシグナルを待機
+    try:
+        while True:
+            sleep(1)
+    except KeyboardInterrupt:
+        pass
