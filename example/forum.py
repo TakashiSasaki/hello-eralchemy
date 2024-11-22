@@ -132,3 +132,4 @@ if __name__ == "__main__":
     render_er(Base, "forum.er")
     render_er(Base, "forum.dot")
     render_er(Base, "forum.png")
+    render_er(Base, "forum.plain")
