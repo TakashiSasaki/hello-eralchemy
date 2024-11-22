@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ER Diagram Generator (WebP)</title>
+    <link rel="stylesheet" href="webp.css">
+</head>
+<body>
+    <div class="container">
+        <h1>ER Diagram Generator (WebP)</h1>
+        <textarea id="sql-input" placeholder="Write your SQL schema here..."></textarea>
+        <div class="button-container">
+            <button id="load-sql-btn">Load Example SQL</button>
+            <button id="submit-btn">Generate ER Diagram</button>
+            <div id="loading-spinner" class="spinner" style="display: none;"></div>
+        </div>
+        <img id="er-diagram" alt="ER Diagram will appear here" style="display: none;">
+        <p id="error-message" style="color: red; display: none;"></p>
+    </div>
+    <script>
+        let isFetching = false;
+
+        document.getElementById('load-sql-btn').addEventListener('click', async () => {
+            const sqlInput = document.getElementById('sql-input');
+            const errorMessage = document.getElementById('error-message');
+
+            errorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('/example.sql');
+                if (!response.ok) {
+                    throw new Error(`Failed to load example.sql: ${response.statusText}`);
+                }
+                const sql = await response.text();
+                sqlInput.value = sql;
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        document.getElementById('submit-btn').addEventListener('click', async () => {
+            if (isFetching) return;
+
+            const sql = document.getElementById('sql-input').value;
+            const button = document.getElementById('submit-btn');
+            const spinner = document.getElementById('loading-spinner');
+            const errorMessage = document.getElementById('error-message');
+            const imgElement = document.getElementById('er-diagram');
+
+            isFetching = true;
+            button.disabled = true;
+            spinner.style.display = 'inline-block';
+            errorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('http://localhost:18080', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: sql,
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const imgURL = URL.createObjectURL(blob);
+
+                    imgElement.src = imgURL;
+                    imgElement.style.display = 'block';
+                } else {
+                    imgElement.style.display = 'none';
+                    imgElement.src = '';
+                    const errorText = await response.text();
+                    errorMessage.textContent = `Server Error: ${errorText}`;
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                imgElement.style.display = 'none';
+                imgElement.src = '';
+                errorMessage.textContent = `Network Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+            } finally {
+                isFetching = false;
+                button.disabled = false;
+                spinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
