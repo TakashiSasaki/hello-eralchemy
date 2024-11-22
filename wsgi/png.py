@@ -69,38 +69,24 @@ def application(environ, start_response):
             temp_png_name = temp_png.name
             temp_png.close()
 
-            try:
-                connection = sqlite3.connect(temp_db_name)
-                cursor = connection.cursor()
-                cursor.executescript(body)
-                connection.commit()
-                connection.close()
-                del connection, cursor  # リソースを明示的に解放
+            connection = sqlite3.connect(temp_db_name)
+            cursor = connection.cursor()
+            cursor.executescript(body)
+            connection.commit()
+            connection.close()
+            del connection, cursor  # リソースを明示的に解放
 
-                render_er(f"sqlite:///{temp_db_name}", temp_png_name)
+            render_er(f"sqlite:///{temp_db_name}", temp_png_name)
 
-                with open(temp_png_name, "rb") as png_file:
-                    png_data = png_file.read()
+            with open(temp_png_name, "rb") as png_file:
+                png_data = png_file.read()
 
-                start_response('200 OK', [
-                    ('Access-Control-Allow-Origin', '*'),
-                    ('Content-Type', 'image/png'),
-                    ('Content-Length', str(len(png_data))),
-                ])
-                return [png_data]
-
-            finally:
-                try:
-                    if os.path.exists(temp_db_name):
-                        os.remove(temp_db_name)
-                except Exception as e:
-                    print(f"Error removing temp_db: {e}")
-
-                try:
-                    if os.path.exists(temp_png_name):
-                        os.remove(temp_png_name)
-                except Exception as e:
-                    print(f"Error removing temp_png: {e}")
+            start_response('200 OK', [
+                ('Access-Control-Allow-Origin', '*'),
+                ('Content-Type', 'image/png'),
+                ('Content-Length', str(len(png_data))),
+            ])
+            return [png_data]
 
         except Exception as e:
             error_message = f"Error: {e}"
