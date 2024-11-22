@@ -11,4 +11,5 @@ MIME_TYPES = {
     '.plain': 'text/plain',
     '.png': 'image/png',
     '.webp': 'image/webp',
+    '.gv': 'text/vnd.graphviz',  # Added MIME type for .gv files
 }
