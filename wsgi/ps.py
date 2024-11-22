@@ -6,15 +6,7 @@ import os
 import signal
 from wsgiref.simple_server import make_server, WSGIServer
 from eralchemy import render_er
-
-MIME_TYPES = {
-    '.sql': 'text/plain',
-    '.txt': 'text/plain',
-    '.ps': 'application/postscript',
-    '.html': 'text/html',
-    '.htm': 'text/html',
-    '.css': 'text/css',
-}
+from mimetypes import MIME_TYPES  # MIME_TYPES をインポート
 
 class TimeoutWSGIServer(WSGIServer):
     """WSGIServer with timeout support."""
